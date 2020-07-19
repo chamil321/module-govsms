@@ -10,7 +10,7 @@ The GovSms Connector provides the capability to send SMS using Government SMS se
 ## Configurations
 
 Instantiate the connector by giving authentication details in the GovSMS client config, which has built-in support 
-for BasicAuth. For the secure connection, secure socket configuration is needed. In addtion to that, timeout and 
+for BasicAuth. For the secure connection, secure socket configuration is needed. In addition to that, timeout and 
 retry configs also can be configured.
 
 ```ballerina

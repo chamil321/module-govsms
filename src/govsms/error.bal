@@ -17,6 +17,7 @@
 public type Detail record {
     string message;
     error cause?;
+    int stuatusCode?;
 };
 
 public const CLIENT_ERROR = "{chamil/govsms}ClientError";

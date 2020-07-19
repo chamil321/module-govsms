@@ -54,3 +54,22 @@ function testSecureClient() {
 function getTimestamp() returns string {
     return time:toString(time:currentTime());
 }
+
+Configuration authenticationConfig = {
+    username : username,
+    password : "password"
+
+};
+
+Client govsmsAuthTestClient = new(authenticationConfig);
+
+@test:Config {}
+function testAuthenticationFailure() {
+    Response|Error response = govsmsAuthTestClient->sendSms("IctaTest", "Test authentication : " + getTimestamp(),
+                                                             "0716181154");
+    if (response is Error) {
+    	 test:assertEquals(<string> response.detail()?.message, "Invalid Authentication Key");
+    } else {
+    	 test:assertFail(msg = "Authentication flow malfunctioned. " + response.toString());
+    }
+}

@@ -76,7 +76,7 @@ public type Client client object {
 
         if result is error {
             error err = result;
-            return Error(message = "Message sending failed", cause = err);
+            return Error(message = "Message sending failed", cause = err, stuatusCode = 500);
         }
 
         http:Response response = <http:Response> result;
@@ -85,7 +85,7 @@ public type Client client object {
             log:printDebug(function () returns string {
                                 return "Invalid payload content: " + resPayload.toString();
                             });
-             return Error(message = "Invalid payload content", cause = resPayload);
+            return Error(message = "Invalid payload content", cause = resPayload, stuatusCode = 500);
         }
 
         xml xmlPayload = <xml> resPayload;
@@ -101,6 +101,6 @@ public type Client client object {
 
         //Process error response
         xml xmlMessage = xmlPayload/**/<faultstring>/*;
-        return {statusCode : response.statusCode, message : xmlMessage.toString() };
+        return Error(message = xmlMessage.toString(), stuatusCode = response.statusCode);
     }
 };
