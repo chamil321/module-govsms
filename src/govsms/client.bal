@@ -33,11 +33,7 @@ public type Client client object {
             retryConfig: config?.retryConfig
         };
 
-        if config?.secureSocketConfig is () {
-            self.govSmsClient = new(CLEAR_TEXT_BASE_URL, httpClientConfig);
-        } else {
-            self.govSmsClient = new(SECURE_BASE_URL, httpClientConfig);
-        }
+        self.govSmsClient = new(SECURE_BASE_URL, httpClientConfig);
     }
 
     # Send SMS to the recipient.
