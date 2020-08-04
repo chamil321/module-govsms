@@ -2,7 +2,7 @@ Send SMS through GovSMS server from Ballerina.
 
 ## Module Overview
 
-The GovSms Connector provides the capability to send SMS using Government SMS server using it's SOAP API. 
+The GovSms Connector provides the capability to send bulk SMS using Government SMS server using it's SOAP API. 
 
 ## Compatibility
 |                     |    Version           |
@@ -32,7 +32,8 @@ import ballerina/io;
 import chamil/govsms;
 
 public function main() {
-    govsms:Response|govsms:Error response = smsClient->sendSms("DepartmentCode", "Test message", "0777777777");
+    govsms:Response|govsms:Error response = smsClient->sendSms("DepartmentCode", "Test message", 
+                                                               ["1111111111", "2222222222", "3333333333"]);
     if (response is govsms:Error) {
         io:println("Error: " + response.toString());
     } else {

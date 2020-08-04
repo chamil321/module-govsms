@@ -15,6 +15,7 @@
 // under the License.
 
 import ballerina/http;
+import ballerina/lang.'xml;
 import ballerina/log;
 
 public type Client client object {
@@ -40,9 +41,11 @@ public type Client client object {
     #
     # + subject - The title that should appear in the SMS. Either source mobile or department code
     # + message - The message body of the SMS
-    # + recepient - The mobile number which the SMS should be delivered to
+    # + recepients - The array of mobile numbers which the SMS should be delivered to
     # + return - The `govsms:Error` if it is a failure or else the response
-    public remote function sendSms(string subject, string message, string recepient) returns @tainted Response|Error {
+    public remote function sendSms(string subject, string message, string[] recepients) returns
+        @tainted Response|Error {
+        xmlns "http://schemas.icta.lk/xsd/kannel/handler/v1/" as v1;
         xml payload = xml `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
                             xmlns:v1="http://schemas.icta.lk/xsd/kannel/handler/v1/"
                             soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
@@ -54,16 +57,26 @@ public type Client client object {
                               </soapenv:Header>
                               <soapenv:Body>
                                  <v1:SMSRequest>
-                                    <v1:requestData>
-                                       <v1:outSms>${message}</v1:outSms>
-                                       <v1:recepient>${recepient}</v1:recepient>
-                                       <v1:depCode>${subject}</v1:depCode>
-                                       <v1:smscId />
-                                       <v1:billable />
-                                    </v1:requestData>
                                  </v1:SMSRequest>
-                              </soapenv:Body>
-                           </soapenv:Envelope>`;
+                               </soapenv:Body>
+                            </soapenv:Envelope>`;
+
+        xml body = 'xml:concat() ;
+        foreach var recepient in recepients {
+            xml recipientBody = xml `<v1:requestData>
+                               <v1:outSms>${message}</v1:outSms>
+                               <v1:recepient>${recepient}</v1:recepient>
+                               <v1:depCode>${subject}</v1:depCode>
+                               <v1:smscId />
+                               <v1:billable />
+                            </v1:requestData>`;
+            body = body + recipientBody;
+         }
+
+        var x = payload/**/<v1:SMSRequest>;
+        'xml:Element e = <'xml:Element> x;
+        e.setChildren(body);
+
 
         http:Request request = new;
         request.setXmlPayload(payload, contentType = "text/xml");
