@@ -7,6 +7,8 @@ string username = system:getEnv("GOVSMS_USERNAME") == "" ? config:getAsString("G
                   ("GOVSMS_USERNAME");
 string password = system:getEnv("GOVSMS_PASSWORD") == "" ? config:getAsString("GOVSMS_PASSWORD") : system:getEnv
                   ("GOVSMS_PASSWORD");
+string recipient = system:getEnv("GOVSMS_RECIPIENT") == "" ? config:getAsString("GOVSMS_RECIPIENT") : system:getEnv
+                  ("GOVSMS_RECIPIENT");
 
 Configuration govsmsClearTextConfig = {
     username : username,
@@ -18,7 +20,7 @@ Client govsmsClearTextClient = new(govsmsClearTextConfig);
 @test:Config {}
 function testClearTextClient() {
     Response|Error response = govsmsClearTextClient->sendSms("IctaTest", "Test cleartext message : " + getTimestamp(),
-                                                             ["0716181154"]);
+                                                             [recipient]);
     if (response is Error) {
     	 test:assertFail(msg = "Message sending failed " + response.toString());
     } else {
@@ -43,7 +45,7 @@ Client govsmsSecureClient = new(govsmsSecureConfig);
 @test:Config {}
 function testSecureClient() {
     Response|Error response = govsmsSecureClient->sendSms("IctaTest", "Test secure message : " + getTimestamp(),
-                                                          ["0716181154"]);
+                                                          [recipient]);
     if (response is Error) {
     	 test:assertFail(msg = "Message sending failed " + response.toString());
     } else {
@@ -66,7 +68,7 @@ Client govsmsAuthTestClient = new(authenticationConfig);
 @test:Config {}
 function testAuthenticationFailure() {
     Response|Error response = govsmsAuthTestClient->sendSms("IctaTest", "Test authentication : " + getTimestamp(),
-                                                             ["0716181154"]);
+                                                             [recipient]);
     if (response is Error) {
     	 test:assertEquals(<string> response.detail()?.message, "Invalid Authentication Key");
     } else {
